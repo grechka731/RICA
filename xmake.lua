@@ -4,7 +4,7 @@ add_rules("plugin.compile_commands.autoupdate", {outputdir = "build"}) -- genera
 set_policy("build.sanitizer.address", true) -- sanitizers
 set_policy("build.sanitizer.leak", true)
 
-add_requires("raylib", "rapidjson", "tl_expected") -- libs
+add_requires("raylib", "rapidjson") -- libs
 set_warnings("all") -- warns
 set_languages("c++17")
 
