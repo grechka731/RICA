@@ -19,7 +19,17 @@ public:
   }
 
   void addComponent(std::shared_ptr<Component> comp);
-  template <typename T> std::shared_ptr<T> getComponent();
+  template <typename T> std::shared_ptr<T> getComponent() {
+    for (auto componentPtr : components) {
+      if (componentPtr == nullptr)
+        continue;
+
+      if (auto casted = std::dynamic_pointer_cast<T>(componentPtr)) {
+        return casted;
+      }
+    }
+    return nullptr;
+  }
 
   int getID() const;
 
