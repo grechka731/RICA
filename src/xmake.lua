@@ -18,7 +18,6 @@ target("EngineLib")
         "ECS/Components/Audio/",
         "ECS/Components/Camera/",
         "ECS/Components/Collider/Collider2D/",
-        "ECS/Components/Collider/Collider3D/",
         "ECS/Components/Physic/",
         "ECS/Components/Sprite/",
         "ECS/Components/Transform/",
