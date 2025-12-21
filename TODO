@@ -1,3 +1,2 @@
 - Move everything to it's own namespace (maybe rica::)
 - Don't do ptr = nullptr for shared ptr vector elements, remove them instead (This leaks 8 bytes of memory techinally, this won't trigger ASAN so fix asap)
-- Add an abstract class Node
