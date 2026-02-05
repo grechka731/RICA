@@ -157,8 +157,10 @@ bool Engine::init() {
 
   // Инициализируем ImGui для всех режимов, так как он нужен и в игре, и в редакторе
   rlImGuiSetup(true); 
+  // БЛЯТЬ ПОЧЕМУ ТО НЕТУ ТУТ #ifdef EDITOR
+  #ifdef EDITOR
   editor.init();
-
+  #endif
   return true;
 }
 
@@ -245,6 +247,83 @@ void Engine::SceneManager::setSceneLimit(unsigned int limit) {
   }
 }
 
+
+
+// Функции для построения RenderObject3D и RenderObject2D из Entity
+RenderObject3D BuildRenderObject(std::shared_ptr<Entity> entity) {
+
+  RenderObject3D obj;
+
+  auto model = entity->getComponent<MeshComponent>();
+  auto transform = entity->getComponent<Transform3DComponent>();
+
+  if (!model || !transform || !model->isLoaded())
+    return obj;
+
+  obj.model = model->getModel();
+  // TODO : Add texture to the object 
+  // obj.texture = model->getTexture();
+
+  obj.position = transform->getPosition();
+  obj.rotationAxis = transform->getRotationAxis();
+  obj.rotationAngle = transform->getRotationAngle();
+  obj.scale = transform->getScale();
+
+  obj.tint = model->getColor();
+  obj.isLoaded = true;
+
+  return obj;
+}
+// Построение списка RenderObject3D из списка Entity
+std::vector<RenderObject3D>
+BuildRenderList(const std::vector<std::shared_ptr<Entity>>& entities) {
+  std::vector<RenderObject3D> list;
+
+  for (auto& entity : entities) {
+    auto obj = BuildRenderObject(entity);
+    if (obj.isLoaded)
+      list.push_back(obj);
+  }
+
+  return list;
+}
+RenderObject2D BuildRenderObject2D(std::shared_ptr<Entity> entity) {
+  RenderObject2D obj;
+
+  auto sprite = entity->getComponent<SpriteComponent>();
+  auto transform = entity->getComponent<TransformComponent>();
+
+  if (!sprite || !transform)
+    return obj;
+
+  obj.texture = sprite->getTexture();
+  obj.source = sprite->getSource();
+
+  obj.dest = transform->getDest();
+  obj.origin = transform->getOrigin();
+  obj.rotation = transform->getRotation();
+
+  obj.tint = sprite->getColor();
+
+  obj.isLoaded = true;
+
+  return obj;
+}
+std::vector<RenderObject2D>
+BuildRenderList2D(const std::vector<std::shared_ptr<Entity>>& entities) {
+  std::vector<RenderObject2D> list;
+
+  for (auto& entity : entities) {
+    auto obj = BuildRenderObject2D(entity);
+
+    if (obj.isLoaded)
+      list.push_back(obj);
+  }
+
+  return list;
+}
+
+
 int main() {
     logger.addLog(LogLevel::DEBUG, basePath, __func__, "logRica.txt");
 
@@ -265,11 +344,23 @@ int main() {
 
         // 2. OFF-SCREEN РЕНДЕРИНГ (Рендерим всё в текстуру)
         if (engine.is3Dmode()) {
-            render3Dsystem.update(currentScenePtr->getAllEntities());
+          // Получаем все обьекты и переводим их в RenderObject3D( transform,моделька,текстура)
+            auto entities = currentScenePtr->getAllEntities();
+            auto renderList = BuildRenderList(entities);
+            //скармливаем рендеру новый список обьектов
+            render3Dsystem.Draw(renderList, entities);
+
+            
+            // физику не трогаю,там лучше оставить как есть(особенности екс)
             physic3DSystem.update(currentScenePtr->getAllEntities(), engine.deltaTime);
         } else {
             collider2DSystem.update(currentScenePtr->getAllEntities());
-            render2Dsystem.update(currentScenePtr->getAllEntities());
+            auto entities = currentScenePtr->getAllEntities();
+
+            auto renderList2D = BuildRenderList2D(entities);
+
+            render2Dsystem.Draw(renderList2D);
+
             audioSystem.update(currentScenePtr->getAllEntities());
         }
 
@@ -301,10 +392,12 @@ int main() {
         // Прямой вывод текстуры на весь экран
         if (targetTexture.id > 0) {
             BeginShaderMode(engine.shader->getRaylibShader());
-            
-            DrawTextureRec(targetTexture.texture,
-                           (Rectangle){0, 0, (float)width, (float)-height},
-                           (Vector2){0, 0}, WHITE);
+          // msvc плохо воспринимает (Vector2),(Rectangle) и тп cause its C
+          // style но с gcc норм
+           DrawTextureRec(targetTexture.texture,
+                           Rectangle{0, 0, (float)width, (float)-height},
+                           Vector2{0, 0}, WHITE);
+
             
             EndShaderMode();
         }

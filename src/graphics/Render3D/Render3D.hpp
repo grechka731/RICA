@@ -9,8 +9,18 @@ class Engine;
 class Camera3DComponent;
 class Transform3DComponent;
 class MeshComponent; 
+struct RenderObject3D {
+  Model model;
 
-class Render3DSystem {
+  Vector3 position{0, 0, 0};
+  Vector3 rotationAxis{0, 1, 0};
+  float rotationAngle = 0.0f;
+  Vector3 scale{1, 1, 1};
+
+  Color tint = WHITE;
+  bool isLoaded = false;
+};
+  class Render3DSystem {
 public:
     Render3DSystem(const Render3DSystem&) = delete;
     Render3DSystem& operator=(const Render3DSystem&) = delete;
@@ -23,8 +33,9 @@ public:
     }
 
     void init(int screenWidth, int screenHeight);
-
-    void update(const std::vector<std::shared_ptr<Entity>>& entities);
+    //изменил декларацию
+    void Draw(const std::vector<RenderObject3D>& objects,
+           const std::vector<std::shared_ptr<Entity>>& entities);
 
     RenderTexture2D& getRenderTexture() { return renderTexture; }
 

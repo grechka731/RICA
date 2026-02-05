@@ -12,35 +12,16 @@ height=screenHeight;
 renderTexture = LoadRenderTexture(width, height);
 }
 
-void Render2DSystem::update(const std::vector<std::shared_ptr<Entity>>& entities) {
-  std::shared_ptr<Camera2DComponent> activeCamera = nullptr;
-  for (auto entity : entities) {
-    auto camera = entity->getComponent<Camera2DComponent>();
-    if (camera && camera->isActiveCamera()) {
-      activeCamera = camera;
-      break;
-    }
-  }
-
+void Render2DSystem::Draw(const std::vector<RenderObject2D>& objects) {
   BeginTextureMode(renderTexture);
-  if (activeCamera) {
-    BeginMode2D(activeCamera->getCamera2D());
-  }
+  ClearBackground(BLACK);
 
-  for (auto entity : entities) {
-    auto sprite = entity->getComponent<SpriteComponent>();
-    auto transform = entity->getComponent<TransformComponent>();
-
-    if (!sprite || !transform)
+  for (const auto& obj : objects) {
+    if (!obj.isLoaded)
       continue;
 
-    DrawTexturePro(sprite->getTexture(), sprite->getSource(),
-                   transform->getDest(), transform->getOrigin(),
-                   transform->getRotation(), sprite->getColor());
-  }
-
-  if (activeCamera) {
-    EndMode2D();
+    DrawTexturePro(obj.texture, obj.source, obj.dest, obj.origin, obj.rotation,
+                   obj.tint);
   }
 
   EndTextureMode();

@@ -7,6 +7,19 @@
 // ... (остальные forward declarations)
 class Entity;
 class Engine;
+struct RenderObject2D {
+  Texture2D texture;
+
+  Rectangle source;
+  Rectangle dest;
+
+  Vector2 origin{0, 0};
+  float rotation = 0.0f;
+
+  Color tint = WHITE;
+
+  bool isLoaded = false;
+};
 
 class Render2DSystem {
 public:
@@ -20,7 +33,7 @@ public:
 
     void init(int screenWidth, int screenHeight);
 
-    void update(const std::vector<std::shared_ptr<Entity>>& entities);
+    void Draw(const std::vector<RenderObject2D>& objects);
 
     RenderTexture2D& getRenderTexture() { return renderTexture; }
 
