@@ -2,7 +2,11 @@
 #include "Var/Var.hpp"
 #include <algorithm>
 #include <cmath>
+// Если у пользователя не линукс?
+// Убрать заголовок вручную - нетрудно, но зачем, если есть #if defined() ?
+#if defined(__linux__)
 #include <linux/limits.h>
+#endif
 
 AudioSystem& audioSystem = AudioSystem::getInstance();
 
