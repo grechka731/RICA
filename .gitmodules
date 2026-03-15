@@ -1,3 +1,6 @@
 [submodule "lib/rlImGui"]
 	path = lib/rlImGui
 	url = https://github.com/raylib-extras/rlImGui
+[submodule "lib/Slog"]
+	path = lib/Slog
+	url = https://github.com/grechka731/Slog.git

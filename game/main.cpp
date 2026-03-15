@@ -50,12 +50,10 @@ public:
     engineShader->setShaderValue(timeLoc, time);
     if (cameraEntity)
       cameraEntity->update(dt);
+    if (player)
+      player->update(dt);
   }
 
-  void ImGuiDraw() override {
-    ImGui::Begin("test");
-    ImGui::End();
-  }
 };
 
 bool gameStart() {

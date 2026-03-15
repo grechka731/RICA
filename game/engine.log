@@ -1,0 +1,29 @@
+[2026-03-15 16:09:54] [INFO   ] [Engine.cpp:258] [main] - === RICA Engine Started ===
+[2026-03-15 16:09:54] [INFO   ] [Engine.cpp:154] [init] - Engine initialization started
+[2026-03-15 16:09:54] [INFO   ] [Engine.cpp:158] [init] - Audio device initialized
+[2026-03-15 16:09:54] [INFO   ] [Engine.cpp:38] [parseInitFile] - initEngine.json loaded successfully
+[2026-03-15 16:09:54] [INFO   ] [Engine.cpp:102] [parseInitFileForRayLib] - Window config loaded
+[2026-03-15 16:09:55] [INFO   ] [Engine.cpp:136] [parseInitFileForRayLib] - Window initialized
+[2026-03-15 16:09:55] [INFO   ] [Render3D.cpp:15] [init] - 3D Render system initialized
+[2026-03-15 16:09:55] [INFO   ] [Engine.cpp:140] [parseInitFileForRayLib] - 3D render system initialized
+[2026-03-15 16:09:55] [INFO   ] [Engine.cpp:147] [parseInitFileForRayLib] - Target FPS set
+[2026-03-15 16:09:55] [INFO   ] [Engine.cpp:170] [init] - ImGui setup completed
+[2026-03-15 16:09:55] [INFO   ] [Engine.cpp:172] [init] - Editor initialized
+[2026-03-15 16:09:55] [INFO   ] [Engine.cpp:173] [init] - Engine initialization completed successfully
+[2026-03-15 16:09:55] [INFO   ] [Engine.cpp:241] [setSceneLimit] - Expanding scene vector
+[2026-03-15 16:09:55] [DEBUG  ] [Scene.cpp:5] [Scene] - Scene created
+[2026-03-15 16:09:55] [DEBUG  ] [Entity.cpp:14] [Entity] - Entity created
+[2026-03-15 16:09:55] [DEBUG  ] [Entity.cpp:34] [addComponent] - Component added to entity
+[2026-03-15 16:09:55] [DEBUG  ] [Entity.cpp:34] [addComponent] - Component added to entity
+[2026-03-15 16:09:55] [DEBUG  ] [Scene.cpp:15] [createEntity] - Entity created in scene. Total entities updated
+[2026-03-15 16:09:55] [DEBUG  ] [Entity.cpp:14] [Entity] - Entity created
+[2026-03-15 16:09:55] [DEBUG  ] [Entity.cpp:34] [addComponent] - Component added to entity
+[2026-03-15 16:09:56] [DEBUG  ] [Entity.cpp:34] [addComponent] - Component added to entity
+[2026-03-15 16:09:56] [DEBUG  ] [Scene.cpp:15] [createEntity] - Entity created in scene. Total entities updated
+[2026-03-15 16:09:56] [INFO   ] [Engine.cpp:263] [main] - Game loop started
+[2026-03-15 16:10:54] [INFO   ] [Engine.cpp:318] [main] - Game loop ended
+[2026-03-15 16:10:54] [INFO   ] [Engine.cpp:189] [shutdown] - Engine shutdown started
+[2026-03-15 16:10:54] [INFO   ] [Engine.cpp:191] [shutdown] - Window closed
+[2026-03-15 16:10:54] [INFO   ] [Engine.cpp:193] [shutdown] - Shader unloaded
+[2026-03-15 16:10:54] [INFO   ] [Engine.cpp:194] [shutdown] - Engine shutdown completed
+[2026-03-15 16:10:54] [INFO   ] [Engine.cpp:320] [main] - === RICA Engine Stopped ===

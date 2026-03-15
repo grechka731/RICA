@@ -2,12 +2,16 @@
 #include "../Component.hpp"
 #include <raylib.h>
 #include <raymath.h>
-#include "../../../Logger/Logger.hpp"
 #include "../../../rica.hpp"
 
 class MeshComponent : public Component {
 public:
-    MeshComponent() = default;
+    MeshComponent() {
+        var(loaded, &loaded);
+        var(color, &color);
+    }
+
+    const char* getComponentName() const override { return "Mesh"; }
 
     ~MeshComponent() override {
         if (loaded) {
@@ -15,23 +19,17 @@ public:
         }
     }
 
-    // Загружаем модель целиком (правильно для GLTF)
     void loadMesh(const char *path) {
+        // ✅ Регистрируем поля для Details панели
         model = LoadModel(path);
 
         if (model.meshCount == 0) {
-            logger.addLog(LogLevel::ERROR, basePath,
-                TextFormat("Failed to load mesh: empty meshCount from %s", path),
-                "logRica.txt");
-            logger.addLog(LogLevel::ERROR, basePath,
-                TextFormat("Failed to load mesh: empty meshCount from %s", path));
             return;
         }
 
         loaded = true;
     }
 
-    // Установить глобальный цвет модели
     void setColor(Color newColor) {
         color = newColor;
     }

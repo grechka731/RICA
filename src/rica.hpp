@@ -1,6 +1,5 @@
 #pragma once
 
-// Предварительные объявления
 struct Component;
 class SpriteComponent;
 class TransformComponent;
@@ -23,35 +22,30 @@ class AudioSystem;
 #include <string>
 #include <vector>
 
-// переменные
 #include "Var/Var.hpp"
 
-#include "Logger/Logger.hpp"
+#include "logSysem.h"
+#include "logger.h"
 
-// Компоненты ECS
+#include "Property.h"
+#include "Reflector.h"
+
+#include "ECS/Components/Component.hpp"
 #include "ECS/Components/Audio/Audio.hpp"
 #include "ECS/Components/Camera/Camera2D/Camera2D.hpp"
 #include "ECS/Components/Collider/Collider2D/Collider2D.hpp"
-#include "ECS/Components/Component.hpp"
 #include "ECS/Components/Sprite/Sprite.hpp"
 #include "ECS/Components/Mesh/Mesh.hpp"
 #include "ECS/Components/Transform/Transform2D/Transform.hpp"
 #include "ECS/Components/Transform/Transform3D/Transform3D.hpp"
 #include "ECS/Components/Physic/Physic3D/Physic3D.hpp"
-// Объекты ECS
 #include "ECS/Objects/Entity.hpp"
 
-// системы
 #include "Audio/Audio.hpp"
 #include "Collider/Collider2D/Collider2D.hpp"
 #include "graphics/Render2D/Render2D.hpp"
 #include "graphics/Render3D/Render3D.hpp"
 
-// хз
 #include "Input/Input.hpp"
-
-// Мир
 #include "Scene/Scene.hpp"
-
-// Движок
 #include "engine/Engine.hpp"

@@ -7,7 +7,7 @@
              "height": 1080
          },
 
-         "maxFPS": 60,
+         "maxFPS": 1111,
 
          "configurationFlags": [
             "FLAG_FULLSCREEN_MODE"

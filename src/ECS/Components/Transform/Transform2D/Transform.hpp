@@ -1,15 +1,21 @@
 #pragma once
-#include "../../../../rica.hpp"
 #include "../../Component.hpp"
 #include <cmath>
 
 class TransformComponent : public Component {
 public:
-  // Конструктор по умолчанию
-  TransformComponent() 
-    : position({0.0f, 0.0f}), rotation(0.0f), scale(1.0f), width(0.0f), height(0.0f) {}
-    
-  // --- Старый метод set (Оставим для удобства) ---
+  TransformComponent()
+    : position({0.0f, 0.0f}), rotation(0.0f), scale(1.0f), width(0.0f), height(0.0f) {
+    // ✅ Регистрируем поля для Details панели
+    var(position, &position);
+    var(rotation, &rotation);
+    var(scale, &scale);
+    var(width, &width);
+    var(height, &height);
+  }
+
+  const char* getComponentName() const override { return "Transform2D"; }
+
   void set(Vector2 position, float rotation, float scale, float width,
            float height) {
     this->position = position;

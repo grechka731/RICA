@@ -16,7 +16,7 @@ add_defines("IMGUI_ENABLE_VIEWPORTS")
 set_warnings("all") -- warns
 set_languages("c++17")
 
-includes("src", "game")
+includes("src", "game", "lib/Slog")
 
 -- editor: off or on
 option("editor")

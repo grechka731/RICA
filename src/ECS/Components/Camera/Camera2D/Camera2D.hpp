@@ -5,10 +5,25 @@
 
 class Camera2DComponent : public Component {
 public:
-  Camera2DComponent() = default;
+  Camera2DComponent() {
+    // ✅ Регистрируем поля для Details панели
+    var(target, &target);
+    var(offset, &offset);
+    var(rotation, &rotation);
+    var(zoom, &zoom);
+    var(isActive, &isActive);
+  }
+
+  const char* getComponentName() const override { return "Camera2D"; }
 
   Camera2DComponent(Vector2 offset, float zoom = 1.0f, bool isActive = true)
       : offset(offset), zoom(zoom), isActive(isActive) {
+    // ✅ Регистрируем поля для Details панели
+    var(target, &target);
+    var(offset, &offset);
+    var(rotation, &rotation);
+    var(zoom, &zoom);
+    var(isActive, &isActive);
   }
 
   Camera2D getCamera2D() const {
@@ -45,7 +60,6 @@ public:
     this->isActive = isActive;
   }
 
-  // Getters
   Vector2 getTarget() const {
     return target;
   }

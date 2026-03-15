@@ -45,6 +45,10 @@ public:
     void setSkyColor(Color color) {
         skyColor = color;
     }
+
+    void setSelectedEntity(std::shared_ptr<Entity> entity) {
+        selectedEntity = entity;
+    }
     
 private:
     Render3DSystem() = default;
@@ -60,6 +64,7 @@ protected:
     int width = 0;
     int height = 0;
     Color skyColor={0,0,0, 255};
+    std::shared_ptr<Entity> selectedEntity = nullptr;
 
     RenderTexture2D renderTexture = { 0 }; 
 };

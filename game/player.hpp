@@ -18,7 +18,6 @@ private:
     std::shared_ptr<Transform3DComponent> trans;
 public:
     Player() {
-
         trans = std::make_shared<Transform3DComponent>();
         trans->setPosition({0.0f, 0.0f, 0.0f});
         trans->setScale({0.1, 0.1, 0.1});
@@ -28,10 +27,38 @@ public:
         mesh = std::make_shared<MeshComponent>();
         mesh->loadMesh("one.glb");
         this->addComponent(mesh);
-            }
+        
+        var(speed, &speed);
+        var(rotationSpeed, &rotationSpeed);
+    }
 
 
     void update(float deltaTime) {
+        Vector3 position = trans->getPosition();
+        float rotationY = trans->getRotationAngles().y;
+
+        if (input.isKeyDown(KEY_LEFT)) {
+            rotationY -= rotationSpeed * deltaTime;
+        }
+        if (input.isKeyDown(KEY_RIGHT)) {
+            rotationY += rotationSpeed * deltaTime;
+        }
+
+        Vector3 forward = {
+            sinf(rotationY * DEG2RAD),
+            0.0f,
+            cosf(rotationY * DEG2RAD)
+        };
+
+        if (input.isKeyDown(KEY_UP)) {
+            position = Vector3Add(position, Vector3Scale(forward, speed * deltaTime));
+        }
+        if (input.isKeyDown(KEY_DOWN)) {
+            position = Vector3Add(position, Vector3Scale(forward, -speed * deltaTime));
+        }
+
+        trans->setPosition(position);
+        trans->setRotation({0.0f, rotationY, 0.0f});
     }
 
 };

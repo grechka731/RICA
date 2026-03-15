@@ -1,17 +1,31 @@
 #pragma once
-#include "../../../../Logger/Logger.hpp"
 #include "../../Component.hpp"
 #include <raymath.h>
 
 class Collider2DComponent : public Component {
 public:
   Collider2DComponent(Vector2 position, int width, int height, bool isTrigger) {
+    // ✅ Регистрируем поля для Details панели
     this->isTrigger = isTrigger;
     this->position.x = position.x;
     this->position.y = position.y;
     this->width = width;
     this->height = height;
+    var(isTrigger, &this->isTrigger);
+    var(position, &this->position);
+    var(width, &this->width);
+    var(height, &this->height);
   }
+
+  Collider2DComponent() {
+    // ✅ Регистрируем поля для Details панели
+    var(isTrigger, &isTrigger);
+    var(position, &position);
+    var(width, &width);
+    var(height, &height);
+  }
+
+  const char* getComponentName() const override { return "Collider2D"; }
 
   void setTrigger(bool isTrigger) {
     this->isTrigger = isTrigger;

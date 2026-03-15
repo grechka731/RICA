@@ -27,10 +27,14 @@ public:
         camera = std::make_shared<Camera3DComponent>(Vector3{0.0f, 2.0f, 10.0f}, 90.0f, true);
         camera->setTarget({0.0f, 0.0f, 0.0f});
         this->addComponent(camera);
+    
+        var(moveSpeed, &moveSpeed);
+        var(mouseSensitivity, &mouseSensitivity);
+        var(yaw, &yaw);
+        var(pitch, &pitch);
     }
 
     void update(float deltaTime) {
-        // Мышь работает через Raylib напрямую
         Vector2 mouseDelta = GetMouseDelta();
         yaw -= mouseDelta.x * mouseSensitivity;
         pitch -= mouseDelta.y * mouseSensitivity;
@@ -44,7 +48,6 @@ public:
 
         Vector3 position = trans->getPosition();
 
-        // Использование требуемого синтаксиса input.isKeyDown
         if (input.isKeyDown(KEY_W)) position = Vector3Add(position, Vector3Scale(forwardMove, moveSpeed * deltaTime));
         if (input.isKeyDown(KEY_S)) position = Vector3Add(position, Vector3Scale(forwardMove, -moveSpeed * deltaTime));
         if (input.isKeyDown(KEY_A)) position = Vector3Add(position, Vector3Scale(rightMove, moveSpeed * deltaTime));

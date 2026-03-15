@@ -1,30 +1,28 @@
 #include "Sprite.hpp"
 #include "../../../rica.hpp"
 
-// Загрузка текстуры
 bool SpriteComponent::LoadTextureSprite(const char* path) {
-  // Если уже была текстура — разгрузим
-  if (texture.id != 0)
+  if (texture.id != 0) {
     UnloadTexture(texture);
+    LOG_DEBUG("Previous texture unloaded");
+  }
 
   texture = LoadTexture(path);
+  LOG_DEBUG("Loading texture");
 
   if (texture.id == 0) {
-    logger.addLog(LogLevel::ERROR, basePath, "Failed to load texture", "logRica.txt");
-    logger.addLog(LogLevel::ERROR, basePath, "Failed to load texture");
-
-
+    LOG_ERROR("Failed to load texture");
     return false;
   }
 
-  // Настраиваем прямоугольник источника
+  LOG_INFO("Texture loaded successfully");
+
   source = {0, 0, (float)texture.width, (float)texture.height};
   color = WHITE;
 
   return true;
 }
 
-// Конструктор со std::string
 SpriteComponent::SpriteComponent(const std::string& path) {
   LoadTextureSprite(path.c_str());
 }

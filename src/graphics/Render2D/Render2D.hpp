@@ -4,7 +4,6 @@
 #include <memory>
 #include <vector>
 
-// ... (остальные forward declarations)
 class Entity;
 class Engine;
 

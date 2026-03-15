@@ -10,7 +10,13 @@ public:
         Vector3 rotationAngles = {0.0f, 0.0f, 0.0f},
         Vector3 scale = {1.0f, 1.0f, 1.0f}
     )
-        : position(position), rotationAngles(rotationAngles), scale(scale) {}
+        : position(position), rotationAngles(rotationAngles), scale(scale) {
+        var(position, &this->position);
+        var(rotationAngles, &this->rotationAngles);
+        var(scale, &this->scale);
+    }
+
+    const char* getComponentName() const override { return "Transform3D"; }
 
     void setPosition(const Vector3& pos) { position = pos; }
     void setRotation(const Vector3& rot) { rotationAngles = rot; }

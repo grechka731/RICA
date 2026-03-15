@@ -5,9 +5,7 @@ Collider2DSystem& collider2DSystem = Collider2DSystem::getInstance();
 
 void Collider2DSystem::update(
     const std::vector<std::shared_ptr<Entity>>& entities) {
-  logger.addLog(LogLevel::DEBUG, basePath, __func__, "logRica.txt");
-
-
+  LOG_DEBUG("Collider2D update: checking entities");
   for (auto entity : entities) {
     auto transform = entity->getComponent<TransformComponent>();
     auto collider = entity->getComponent<Collider2DComponent>();

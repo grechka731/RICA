@@ -1,9 +1,8 @@
 #pragma once
 #include "raylib.h"
+
 #ifdef EDITOR
-#include "../editor/editor/editor.hpp"
-#include "../editor/panel/allPanels/viewport/viewport.hpp"
-#include "../editor/panel/panel.hpp"
+bool isViewportFocused();
 #endif
 
 class Input {
@@ -21,50 +20,34 @@ public:
 
   static bool isKeyPressed(int key) {
 #ifdef EDITOR
-    if (!editor.getViewport().getiswindowActive())
+    if (!isViewportFocused())
       return false;
 #endif
-
-    if (IsKeyPressed(key)) {
-      return true;
-    }
-    return false;
+    return IsKeyPressed(key);
   }
 
   static bool isKeyReleased(int key) {
 #ifdef EDITOR
-    if (!editor.getViewport().getiswindowActive())
+    if (!isViewportFocused())
       return false;
 #endif
-
-    if (IsKeyReleased(key)) {
-      return true;
-    }
-    return false;
+    return IsKeyReleased(key);
   }
 
   static bool isKeyDown(int key) {
 #ifdef EDITOR
-    if (!editor.getViewport().getiswindowActive())
+    if (!isViewportFocused())
       return false;
 #endif
-
-    if (IsKeyDown(key)) {
-      return true;
-    }
-    return false;
+    return IsKeyDown(key);
   }
 
   static bool isKeyUp(int key) {
 #ifdef EDITOR
-    if (!editor.getViewport().getiswindowActive())
+    if (!isViewportFocused())
       return false;
 #endif
-
-    if (IsKeyUp(key)) {
-      return true;
-    }
-    return false;
+    return IsKeyUp(key);
   }
 };
 

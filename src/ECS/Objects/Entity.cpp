@@ -9,12 +9,20 @@
 static int globalEntityId = 0;
 
 Entity::Entity() : id(globalEntityId++) {
+  var(id, &id);
+  var(tag, &tag);
+  LOG_DEBUG("Entity created");
 }
 
 Entity::Entity(std::string tag) : id(globalEntityId++), tag(tag) {
+  var(id, &id);
+  var(tag, &tag);
+  LOG_DEBUG("Entity created with tag");
 }
 
-Entity::~Entity() = default;
+Entity::~Entity() {
+  LOG_DEBUG("Entity destroyed");
+}
 
 int Entity::getID() const {
   return id;
@@ -23,6 +31,9 @@ int Entity::getID() const {
 void Entity::addComponent(std::shared_ptr<Component> comp) {
   if (comp != nullptr) {
     components.push_back(comp);
+    LOG_DEBUG("Component added to entity");
+  } else {
+    LOG_WARN("Attempted to add null component to entity");
   }
 }
 

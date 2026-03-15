@@ -1,6 +1,5 @@
 #pragma once
 
-#include "../../../Logger/Logger.hpp"
 #include "../Component.hpp"
 #include <raylib.h>
 
@@ -8,10 +7,15 @@
 
 class SpriteComponent : public Component {
 public:
-  // Удобный современный конструктор
   SpriteComponent(const std::string& path);
+  
+  SpriteComponent() {
+    var(color, &color);
+    var(source, &source);
+  }
 
-  // Функция загрузки текстуры (const char*, как требует Raylib)
+  const char* getComponentName() const override { return "Sprite"; }
+  
   bool LoadTextureSprite(const char* path);
 
   void setColor(Color color) {
@@ -38,7 +42,7 @@ public:
   }
 
 private:
-  Texture2D texture{0}; // Инициализация Raylib стиля
+  Texture2D texture{0};
   Color color = WHITE;
   Rectangle source{0, 0, 0, 0};
 };

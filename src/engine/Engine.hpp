@@ -12,7 +12,6 @@ class Collider2DComponent;
 
 class Engine {
 public:
-  // движок
   Engine(const Engine&) = delete;
   Engine& operator=(const Engine&) = delete;
   Engine(Engine&&) = delete;

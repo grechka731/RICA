@@ -7,9 +7,10 @@
 Render2DSystem& render2Dsystem = Render2DSystem::getInstance();
 
 void Render2DSystem::init(int screenWidth, int screenHeight) {
-width=screenWidth;
-height=screenHeight;
-renderTexture = LoadRenderTexture(width, height);
+  width = screenWidth;
+  height = screenHeight;
+  renderTexture = LoadRenderTexture(width, height);
+  LOG_INFO("2D Render system initialized");
 }
 
 void Render2DSystem::update(const std::vector<std::shared_ptr<Entity>>& entities) {
@@ -22,11 +23,16 @@ void Render2DSystem::update(const std::vector<std::shared_ptr<Entity>>& entities
     }
   }
 
+  if (!activeCamera) {
+    LOG_WARN("No active camera found for 2D rendering");
+  }
+
   BeginTextureMode(renderTexture);
   if (activeCamera) {
     BeginMode2D(activeCamera->getCamera2D());
   }
 
+  int spriteCount = 0;
   for (auto entity : entities) {
     auto sprite = entity->getComponent<SpriteComponent>();
     auto transform = entity->getComponent<TransformComponent>();
@@ -34,6 +40,7 @@ void Render2DSystem::update(const std::vector<std::shared_ptr<Entity>>& entities
     if (!sprite || !transform)
       continue;
 
+    spriteCount++;
     DrawTexturePro(sprite->getTexture(), sprite->getSource(),
                    transform->getDest(), transform->getOrigin(),
                    transform->getRotation(), sprite->getColor());
@@ -44,4 +51,5 @@ void Render2DSystem::update(const std::vector<std::shared_ptr<Entity>>& entities
   }
 
   EndTextureMode();
+  LOG_DEBUG("2D Render updated");
 }

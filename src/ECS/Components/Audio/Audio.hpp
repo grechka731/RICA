@@ -1,5 +1,4 @@
 #pragma once
-#include "../../../Logger/Logger.hpp"
 #include "../Component.hpp"
 #include <raylib.h>
 #include <raymath.h>
@@ -8,18 +7,16 @@
 #include <vector>
 #include "../../../rica.hpp"
 
-class Log;
-enum LogLevel;
-
 class AudioComponent : public Component {
 public:
   AudioComponent() {
+    // ✅ Регистрируем поля для Details панели
   }
+
+  const char* getComponentName() const override { return "Audio"; }
 
   void addSound(const std::string& tag, const std::string& path) {
     if (tag.empty() || path.empty()) {
-      logger.addLog(LogLevel::DEBUG, basePath, __func__, "logRica.txt");
-
       return;
     }
     Sound sound = LoadSound(path.c_str());

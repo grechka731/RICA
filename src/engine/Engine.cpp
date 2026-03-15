@@ -7,41 +7,35 @@
 #include "Var/Var.hpp"
 #include "raylib.h"
 
+#include "fileLog.h"
+#include "terminalLog.h"
+#include <chrono>
 #include <cstddef>
 #include <fstream>
-#include <string> // Добавлен для std::stoi
 #include <rlImGui.h>
+#include <string>
+#include <thread>
 
 #ifdef EDITOR
 #include "editor/editor/editor.hpp"
 #endif
 
-// Глобальная переменная движка (Engine Singleton)
 Engine& engine = Engine::getInstance();
 
 bool parseInitFile(rapidjson::Document& doc) {
   std::fstream initFile("initEngine.json");
   if (!initFile.is_open()) {
-    logger.addLog(LogLevel::ERROR, basePath, "Failed to load initEngine.json",
-                  "logRica.txt");
-    logger.addLog(LogLevel::ERROR, basePath, "Failed to load initEngine.json");
-
+    LOG_ERROR("Failed to load initEngine.json");
     return false;
   }
   std::string initString((std::istreambuf_iterator<char>(initFile)),
                          std::istreambuf_iterator<char>());
   doc.Parse(initString.c_str());
   if (doc.HasParseError()) {
-    logger.addLog(LogLevel::ERROR, basePath,
-                  "Failed to parse JSON for position" +
-                      std::to_string(doc.GetErrorOffset()),
-                  "logRica.txt");
-    logger.addLog(LogLevel::ERROR, basePath,
-                  "Failed to parse JSON for position" +
-                      std::to_string(doc.GetErrorOffset()));
-
+    LOG_ERROR("Failed to parse JSON for initEngine.json");
     return false;
   }
+  LOG_INFO("initEngine.json loaded successfully");
   return true;
 }
 
@@ -88,22 +82,25 @@ std::optional<RayLibVar> parseInitFileForRayLib() {
   rayVar.flag = 0;
   rapidjson::Document doc;
 
-  if (!parseInitFile(doc))
+  if (!parseInitFile(doc)) {
+    LOG_ERROR("Failed to parse init file for RayLib");
     return {};
+  }
 
-  // Ранний выход, если нет корневого объекта "rayLib"
-  if (!doc.HasMember("rayLib") || !doc["rayLib"].IsObject())
+  if (!doc.HasMember("rayLib") || !doc["rayLib"].IsObject()) {
+    LOG_ERROR("Missing 'rayLib' configuration in initEngine.json");
     return {};
+  }
 
   const rapidjson::Value& config = doc["rayLib"];
 
-  // 1. Парсинг заголовка и FPS
   if (config.HasMember("windowTitle") && config["windowTitle"].IsString())
     rayVar.title = config["windowTitle"].GetString();
   if (config.HasMember("maxFPS") && config["maxFPS"].IsInt())
     rayVar.maxFPS = config["maxFPS"].GetInt();
 
-  // 2. Парсинг разрешения и флагов
+  LOG_INFO("Window config loaded");
+
   if (config.HasMember("resolution") && config["resolution"].IsObject()) {
     const rapidjson::Value& resolution = config["resolution"];
 
@@ -135,29 +132,48 @@ std::optional<RayLibVar> parseInitFileForRayLib() {
 
   SetConfigFlags(rayVar.flag);
   InitWindow(rayVar.width, rayVar.height, rayVar.title.c_str());
-  if (engine.is3Dmode())
+  SetExitKey(KEY_NULL);
+  LOG_INFO("Window initialized");
+
+  if (engine.is3Dmode()) {
     render3Dsystem.init(rayVar.width, rayVar.height);
-  else
+    LOG_INFO("3D render system initialized");
+  } else {
     render2Dsystem.init(rayVar.width, rayVar.height);
+    LOG_INFO("2D render system initialized");
+  }
 
   SetTargetFPS(rayVar.maxFPS);
+  LOG_INFO("Target FPS set");
 
   return rayVar;
 }
 
 bool Engine::init() {
+
+  LOG_INFO("Engine initialization started");
+
   SetTraceLogLevel(LOG_ALL);
   InitAudioDevice();
+  LOG_INFO("Audio device initialized");
 
   isRunning = true;
   auto var = parseInitFileForRayLib();
-  
-  if (!var)
-    return false;
 
-  // Инициализируем ImGui для всех режимов, так как он нужен и в игре, и в редакторе
-  rlImGuiSetup(true); 
+  if (!var) {
+    LOG_ERROR("Failed to initialize RayLib configuration");
+    return false;
+  }
+
+#ifdef EDITOR
+  rlImGuiSetup(true);
+  LOG_INFO("ImGui setup completed");
   editor.init();
+  LOG_INFO("Editor initialized");
+  LOG_INFO("Engine initialization completed successfully");
+#else 
+  DisableCursor();
+#endif
 
   return true;
 }
@@ -170,72 +186,62 @@ void Engine::deleteVectorSceneManager() {
 }
 
 void Engine::shutdown() {
+  LOG_INFO("Engine shutdown started");
   CloseWindow();
+  LOG_INFO("Window closed");
   engine.shader = {}; // deletes the shader, unloading it
+  LOG_INFO("Shader unloaded");
+  LOG_INFO("Engine shutdown completed");
 }
 
 std::vector<std::shared_ptr<Scene>> Engine::vectorSceneManager;
 Engine::SceneManager Engine::sceneManager;
 
 void Engine::updateCurrentScene() {
-  logger.addLog(LogLevel::DEBUG, basePath, __func__, "logRica.txt");
   unsigned int currentSceneId = sceneManager.getCurrentSceneID();
   if (currentSceneId < vectorSceneManager.size() &&
       vectorSceneManager[currentSceneId] != nullptr) {
+    LOG_DEBUG("Updating current scene");
     vectorSceneManager[currentSceneId]->updateEntity();
+  } else {
+    LOG_WARN("Scene not found or is null");
   }
 }
 
 std::shared_ptr<Scene> Engine::SceneManager::newSceneByID(unsigned int ID) {
   if (ID >= Engine::vectorSceneManager.size()) {
-
-    logger.addLog(LogLevel::CRITICAL, basePath,
-                  "World ID " + std::to_string(ID) +
-                      " is out of bounds! Resizing vector.",
-                  "logRica.txt");
-    logger.addLog(LogLevel::CRITICAL, basePath,
-                  "World ID " + std::to_string(ID) +
-                      " is out of bounds! Resizing vector.");
-
+    LOG_INFO("Resizing scene vector");
     Engine::vectorSceneManager.resize(ID + 1, nullptr);
   }
   if (Engine::vectorSceneManager[ID] != nullptr) {
+    LOG_WARN("Scene already exists, replacing it");
     Engine::vectorSceneManager[ID] = nullptr;
   }
   auto scenePtr = std::make_shared<Scene>();
   Engine::vectorSceneManager[ID] = scenePtr;
+  LOG_INFO("Scene created successfully");
   return scenePtr;
 }
 
 void Engine::SceneManager::setSceneByID(unsigned int ID) {
   if (ID >= vectorSceneManager.size()) {
-    logger.addLog(LogLevel::CRITICAL, basePath,
-                  "Cannot set scene ID " + std::to_string(ID) +
-                      ": out of bounds",
-                  "logRica.txt");
-    logger.addLog(LogLevel::CRITICAL, basePath,
-                  "Cannot set scene ID " + std::to_string(ID) +
-                      ": out of bounds");
+    LOG_ERROR("Cannot set scene ID: out of bounds");
     return;
   }
   if (vectorSceneManager[ID] == nullptr) {
-    logger.addLog(LogLevel::CRITICAL, basePath,
-                  "Cannot set scene ID " + std::to_string(ID) +
-                      ": scene is null",
-                  "logRica.txt");
-    logger.addLog(LogLevel::CRITICAL, basePath,
-                  "Cannot set scene ID " + std::to_string(ID) +
-                      ": scene is null");
-
+    LOG_ERROR("Cannot set scene ID: scene is null");
     return;
   }
+  LOG_INFO("Scene switched");
   sceneCurrent = ID;
 }
 
 void Engine::SceneManager::setSceneLimit(unsigned int limit) {
   if (limit > Engine::vectorSceneManager.size()) {
+    LOG_INFO("Expanding scene vector");
     Engine::vectorSceneManager.resize(limit, nullptr);
   } else if (limit < Engine::vectorSceneManager.size()) {
+    LOG_INFO("Shrinking scene vector");
     for (int i = limit; i < (int)Engine::vectorSceneManager.size(); i++) {
       if (Engine::vectorSceneManager[i] != nullptr) {
         Engine::vectorSceneManager[i] = nullptr;
@@ -246,77 +252,74 @@ void Engine::SceneManager::setSceneLimit(unsigned int limit) {
 }
 
 int main() {
-    logger.addLog(LogLevel::DEBUG, basePath, __func__, "logRica.txt");
+  logger.addSystem(new terminalLog());
+  logger.addSystem(new fileLog("engine.log"));
 
-    if (!gameStart())
-        return 1;
+  LOG_INFO("=== RICA Engine Started ===");
+  if (!gameStart()) {
+    LOG_ERROR("Game initialization failed");
+    return 1;
+  }
+  LOG_INFO("Game loop started");
 
-    while (engine.getIsRunning() && !WindowShouldClose()) {
-        engine.deltaTime = GetFrameTime();
-        //if (IsKeyPressed(KEY_ESCAPE))
-          //  engine.setIsRunning(false);
+  while (engine.getIsRunning() && !WindowShouldClose()) {
+    engine.deltaTime = GetFrameTime();
 
-        unsigned int currentSceneId = engine.sceneManager.getCurrentSceneID();
-        // Здесь должна быть ваша проверка на существование сцены
-        auto currentScenePtr = Engine::vectorSceneManager[currentSceneId];
+    unsigned int currentSceneId = engine.sceneManager.getCurrentSceneID();
+    auto currentScenePtr = Engine::vectorSceneManager[currentSceneId];
 
-        // 1. ОБНОВЛЕНИЕ ЛОГИКИ СЦЕНЫ
-        currentScenePtr->OnUpdate(GetFrameTime());
+    currentScenePtr->OnUpdate(GetFrameTime());
 
-        // 2. OFF-SCREEN РЕНДЕРИНГ (Рендерим всё в текстуру)
-        if (engine.is3Dmode()) {
-            render3Dsystem.update(currentScenePtr->getAllEntities());
-            physic3DSystem.update(currentScenePtr->getAllEntities(), engine.deltaTime);
-        } else {
-            collider2DSystem.update(currentScenePtr->getAllEntities());
-            render2Dsystem.update(currentScenePtr->getAllEntities());
-            audioSystem.update(currentScenePtr->getAllEntities());
-        }
-
-        // 3. ВЫВОД НА ЭКРАН
-        BeginDrawing();
-        ClearBackground(BLACK);
-
-        RenderTexture2D& targetTexture = engine.is3Dmode()
-                                             ? render3Dsystem.getRenderTexture()
-                                             : render2Dsystem.getRenderTexture();
-
-        int width = engine.is3Dmode() ? render3Dsystem.getWidth() : render2Dsystem.getWidth();
-        int height = engine.is3Dmode() ? render3Dsystem.getHeight() : render2Dsystem.getHeight();
-
+    if (engine.is3Dmode()) {
 #ifdef EDITOR
-        // --- РЕЖИМ РЕДАКТОРА ---
-        // Мы НЕ рисуем DrawTextureRec здесь. 
-        // Вместо этого мы открываем ImGui, и Viewport внутри editor.onUpdate() 
-        // сам заберет текстуру и отрисует её в окне.
-        
-        rlImGuiBegin();
-        
-        currentScenePtr->ImGuiDraw(); // Отрисовка UI текущей сцены
-        editor.onUpdate();            // Отрисовка окон редактора (Viewport, Terminal и т.д.)
-        
-        rlImGuiEnd();
-#else
-        // --- РЕЖИМ ИГРЫ ---
-        // Прямой вывод текстуры на весь экран
-        if (targetTexture.id > 0) {
-            BeginShaderMode(engine.shader->getRaylibShader());
-            
-            DrawTextureRec(targetTexture.texture,
-                           (Rectangle){0, 0, (float)width, (float)-height},
-                           (Vector2){0, 0}, WHITE);
-            
-            EndShaderMode();
-        }
+      render3Dsystem.setSelectedEntity(
+          editor.getViewport().getSelectedEntity());
 #endif
-
-        DrawFPS(10, 10);
-        EndDrawing(); 
-
-        logger.addLog(LogLevel::DEBUG, basePath, __func__, "logRica.txt");
-        engine.update();
+      render3Dsystem.update(currentScenePtr->getAllEntities());
+      physic3DSystem.update(currentScenePtr->getAllEntities(),
+                            engine.deltaTime);
+    } else {
+      collider2DSystem.update(currentScenePtr->getAllEntities());
+      render2Dsystem.update(currentScenePtr->getAllEntities());
+      audioSystem.update(currentScenePtr->getAllEntities());
     }
 
-    engine.shutdown();
-    return 0;
+    BeginDrawing();
+    ClearBackground(BLACK);
+
+#ifdef EDITOR
+    rlImGuiBegin();
+    currentScenePtr->ImGuiDraw();
+    editor.onUpdate();
+    rlImGuiEnd();
+#else
+    RenderTexture2D& targetTexture = engine.is3Dmode()
+                                         ? render3Dsystem.getRenderTexture()
+                                         : render2Dsystem.getRenderTexture();
+    int width = engine.is3Dmode() ? render3Dsystem.getWidth()
+                                  : render2Dsystem.getWidth();
+    int height = engine.is3Dmode() ? render3Dsystem.getHeight()
+                                   : render2Dsystem.getHeight();
+    if (targetTexture.id > 0) {
+      BeginShaderMode(engine.shader->getRaylibShader());
+      DrawTextureRec(targetTexture.texture,
+                     (Rectangle){0, 0, (float)width, (float)-height},
+                     (Vector2){0, 0}, WHITE);
+      EndShaderMode();
+    }
+#endif
+
+    DrawFPS(10, 10);
+    EndDrawing();
+
+    engine.update();
+  }
+
+  LOG_INFO("Game loop ended");
+  engine.shutdown();
+  LOG_INFO("=== RICA Engine Stopped ===");
+
+  std::this_thread::sleep_for(std::chrono::milliseconds(500));
+
+  return 0;
 }

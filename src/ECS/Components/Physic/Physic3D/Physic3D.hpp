@@ -5,6 +5,18 @@
 
 class Physic3DComponent : public Component {
 public:
+    Physic3DComponent() {
+        // ✅ Регистрируем поля для Details панели
+        var(velocity, &velocity);
+        var(isStatic, &isStatic);
+        var(gravityActive, &gravityActive);
+        var(mass, &mass);
+        var(gravityScale, &gravityScale);
+        var(damping, &damping);
+    }
+
+    const char* getComponentName() const override { return "Physic3D"; }
+
     void addForce(Vector3 f) { forces.push_back(f); }
     const std::vector<Vector3>& getForces() const { return forces; }
     void clearForces() { forces.clear(); }
