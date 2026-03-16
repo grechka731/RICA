@@ -2,7 +2,6 @@
 #include "Var/Var.hpp"
 #include <algorithm>
 #include <cmath>
-#include <linux/limits.h>
 
 AudioSystem& audioSystem = AudioSystem::getInstance();
 
